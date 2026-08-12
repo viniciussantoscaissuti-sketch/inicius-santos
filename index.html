@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vinícius.dev — do pedido ao site pronto</title>
+<title>vinícius.dev — comercial completo (15 etapas)</title>
 <style>
   :root{
     --bg1:#05040f; --bg2:#1a0f3d; --bg3:#2b1a6b; --bg4:#4b2fb0;
@@ -14,141 +14,86 @@
     --sans:'Segoe UI', system-ui, -apple-system, sans-serif;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{
-    width:100%; height:100%; overflow:hidden; background:#000;
-    font-family:var(--sans); color:var(--text);
-  }
+  html,body{ width:100%; height:100%; overflow:hidden; background:#000; font-family:var(--sans); color:var(--text); }
   #stage{
     position:relative; width:100vw; height:100vh; min-height:100dvh;
     background:linear-gradient(160deg,var(--bg1) 0%, var(--bg2) 30%, var(--bg3) 55%, var(--bg4) 80%, var(--bg1) 100%);
-    background-size:200% 200%;
-    animation:bgShift 18s ease infinite;
+    background-size:200% 200%; animation:bgShift 18s ease infinite;
     display:flex; align-items:center; justify-content:center;
   }
-  @keyframes bgShift{
-    0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;}
-  }
-
+  @keyframes bgShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
   .glow{position:absolute; border-radius:50%; filter:blur(90px); opacity:.35; pointer-events:none;}
   .glow.g1{width:420px; height:420px; background:var(--accent); top:-100px; left:-100px; animation:float1 12s ease-in-out infinite;}
   .glow.g2{width:380px; height:380px; background:var(--accent2); bottom:-120px; right:-80px; animation:float2 14s ease-in-out infinite;}
   @keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,30px);}}
   @keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-30px,-40px);}}
-
-  #brand{
-    position:absolute; top:28px; left:32px; z-index:50;
-    font-family:var(--mono); font-size:1.1rem; letter-spacing:.5px;
-    opacity:0; animation:fadeIn .8s ease forwards; animation-delay:.3s;
-  }
+  #brand{ position:absolute; top:28px; left:32px; z-index:60; font-family:var(--mono); font-size:1.1rem; opacity:0; animation:fadeIn .8s ease forwards .3s; }
   #brand b{color:var(--accent2);}
+  @keyframes fadeIn{ to{opacity:1;} }
 
-  /* cenas controladas por JS (não por delay fixo) para poder esperar a fala terminar */
-  .scene{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    opacity:0; transform:scale(1.02); pointer-events:none;
-    transition:opacity .8s ease, transform .8s ease;
+  #stepCounter{
+    position:absolute; top:28px; right:32px; z-index:60; font-family:var(--mono); font-size:.78rem; color:var(--dim);
+    opacity:0; transition:opacity .4s ease;
   }
+  #stepCounter.show{ opacity:1; }
+
+  .scene{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(1.02); pointer-events:none; transition:opacity .7s ease, transform .7s ease; padding:20px; }
   .scene.show{ opacity:1; transform:scale(1); pointer-events:auto; }
 
-  /* ---------------- CENA 1: notificação do WhatsApp ---------------- */
-  .phone{
-    width:320px; height:640px; border-radius:44px; background:#0b0b12;
-    border:8px solid #1c1c26; box-shadow:0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
-    position:relative; overflow:hidden;
+  /* ---- template genérico de "beat" simples (ícone + legenda cinética) ---- */
+  .beat{ text-align:center; max-width:560px; }
+  .beat-icon{ font-size:4.2rem; margin-bottom:22px; opacity:0; transform:translateY(14px) scale(.85); transition:opacity .6s ease, transform .6s ease; }
+  .beat-icon.show{ opacity:1; transform:translateY(0) scale(1); }
+  .beat-caption{ font-size:1.35rem; font-weight:600; line-height:1.4; opacity:0; transform:translateY(16px); transition:opacity .6s ease .15s, transform .6s ease .15s; }
+  .beat-caption.show{ opacity:1; transform:translateY(0); }
+  .beat-caption b{ color:var(--accent2); }
+  .beat-badge{
+    display:inline-block; margin-top:16px; padding:8px 20px; border-radius:30px; font-size:1.05rem; font-weight:700;
+    background:linear-gradient(135deg,#8b6bff,#6d8bff); opacity:0; transform:scale(.8); transition:opacity .5s ease, transform .5s ease;
   }
-  .phone::before{
-    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:120px; height:22px; background:#0b0b12; border-radius:0 0 14px 14px; z-index:5;
-  }
-  .phone-screen{
-    position:absolute; inset:0; background:linear-gradient(180deg,#111 0%,#1a1a24 100%);
-    display:flex; flex-direction:column; justify-content:flex-end; padding:18px;
-  }
+  .beat-badge.show{ opacity:1; transform:scale(1); }
+
+  /* ---- CENA: WhatsApp (briefing) ---- */
+  .phone{ width:300px; height:600px; border-radius:44px; background:#0b0b12; border:8px solid #1c1c26; box-shadow:0 40px 80px rgba(0,0,0,.6); position:relative; overflow:hidden; }
+  .phone::before{ content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:120px; height:22px; background:#0b0b12; border-radius:0 0 14px 14px; z-index:5; }
+  .phone-screen{ position:absolute; inset:0; background:linear-gradient(180deg,#111 0%,#1a1a24 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:18px; }
   .wa-clock{ position:absolute; top:14px; left:24px; font-size:.75rem; color:#aaa; font-family:var(--mono); }
-  .wa-toast{
-    background:#1f1f28; border-radius:16px; padding:14px 16px; display:flex; gap:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,.5);
-    transform:translateY(-140px) scale(.9); opacity:0;
-    animation: toastIn .7s cubic-bezier(.2,.9,.3,1.3) forwards .6s;
-  }
+  .wa-toast{ background:#1f1f28; border-radius:16px; padding:14px 16px; display:flex; gap:12px; box-shadow:0 10px 30px rgba(0,0,0,.5); transform:translateY(-140px) scale(.9); opacity:0; animation: toastIn .7s cubic-bezier(.2,.9,.3,1.3) forwards .5s; }
   @keyframes toastIn{ to{ transform:translateY(0) scale(1); opacity:1; } }
-  .wa-icon{
-    width:40px; height:40px; border-radius:50%; background:var(--whats); flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:1.3rem;
-  }
+  .wa-icon{ width:40px; height:40px; border-radius:50%; background:var(--whats); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
   .wa-body{ flex:1; min-width:0; }
   .wa-title{ font-weight:700; font-size:.92rem; display:flex; justify-content:space-between; gap:8px; }
   .wa-title span:last-child{ font-weight:400; color:#999; font-size:.72rem; }
-  .wa-msg{
-    font-size:.82rem; color:#ddd; margin-top:3px; line-height:1.35;
-    white-space:pre-wrap; min-height:3.6em;
-  }
+  .wa-msg{ font-size:.82rem; color:#ddd; margin-top:3px; line-height:1.35; white-space:pre-wrap; min-height:3.6em; }
   .wa-msg .cursor{ display:inline-block; width:2px; height:1em; background:#ddd; vertical-align:-2px; animation:blink 1s step-end infinite; }
   @keyframes blink{ 50%{ opacity:0; } }
-  .wa-badge{
-    display:inline-block; margin-top:8px; padding:3px 10px; border-radius:20px;
-    background:linear-gradient(90deg,#8b6bff,#6d8bff); font-size:.68rem; font-weight:700;
-    opacity:0; transition:opacity .5s ease;
-  }
+  .wa-badge{ display:inline-block; margin-top:8px; padding:3px 10px; border-radius:20px; background:linear-gradient(90deg,#8b6bff,#6d8bff); font-size:.68rem; font-weight:700; opacity:0; transition:opacity .5s ease; }
   .wa-badge.show{ opacity:1; }
-  .wa-speaking{
-    display:inline-flex; align-items:center; gap:4px; margin-top:8px; font-size:.68rem; color:#8b6bff;
-    opacity:0; transition:opacity .4s ease;
-  }
-  .wa-speaking.show{ opacity:1; }
-  .wa-speaking .bar{ width:3px; height:8px; background:#8b6bff; border-radius:2px; animation:eq .6s ease-in-out infinite; }
-  .wa-speaking .bar:nth-child(2){ animation-delay:.15s; } .wa-speaking .bar:nth-child(3){ animation-delay:.3s; }
-  @keyframes eq{ 0%,100%{ height:5px; } 50%{ height:12px; } }
 
-  /* ---------------- CENA 2: editor + 11 etapas ---------------- */
+  /* ---- CENA: editor de código ---- */
   .scene2-wrap{ display:flex; gap:18px; width:min(980px,94vw); align-items:stretch; }
-  .editor{
-    flex:1.3; height:540px; background:#0d0d16; border-radius:14px;
-    box-shadow:0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
-    overflow:hidden; display:flex; flex-direction:column;
-  }
-  .editor-bar{
-    height:40px; background:#15151f; display:flex; align-items:center; gap:8px; padding:0 16px;
-    border-bottom:1px solid rgba(255,255,255,.05);
-  }
+  .editor{ flex:1.3; height:500px; background:#0d0d16; border-radius:14px; box-shadow:0 40px 100px rgba(0,0,0,.6); overflow:hidden; display:flex; flex-direction:column; }
+  .editor-bar{ height:40px; background:#15151f; display:flex; align-items:center; gap:8px; padding:0 16px; border-bottom:1px solid rgba(255,255,255,.05); }
   .dot{ width:11px; height:11px; border-radius:50%; }
   .dot.r{background:#ff5f56;} .dot.y{background:#ffbd2e;} .dot.g{background:#27c93f;}
   .editor-fname{ margin-left:14px; font-family:var(--mono); font-size:.75rem; color:#888; }
-  .editor-body{
-    flex:1; padding:20px 24px; font-family:var(--mono); font-size:.82rem; line-height:1.7;
-    color:#c6bdea; overflow:hidden; white-space:pre-wrap;
-  }
-  .editor-body .tag{color:#6d8bff;} .editor-body .attr{color:#8b6bff;} .editor-body .str{color:#7dd3fc;}
-  .editor-body .cmt{color:#5a5670; font-style:italic;}
+  .editor-body{ flex:1; padding:20px 24px; font-family:var(--mono); font-size:.8rem; line-height:1.65; color:#c6bdea; overflow:hidden; white-space:pre-wrap; }
+  .editor-body .tag{color:#6d8bff;} .editor-body .attr{color:#8b6bff;} .editor-body .str{color:#7dd3fc;} .editor-body .cmt{color:#5a5670; font-style:italic;}
   #codeCursor{ display:inline-block; width:8px; height:1em; background:#8b6bff; vertical-align:-3px; animation:blink .9s step-end infinite; }
   .progress-wrap{ height:6px; background:rgba(255,255,255,.06); border-radius:3px; margin:0 24px 20px; overflow:hidden; }
   .progress-bar{ height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,#8b6bff,#6d8bff,#7dd3fc); transition:width .4s linear; }
-
-  .steps-panel{
-    flex:1; background:#0d0d16; border-radius:14px; padding:20px 18px;
-    box-shadow:0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
-    display:flex; flex-direction:column; gap:9px; overflow-y:auto;
-  }
-  .steps-title{ font-family:var(--mono); font-size:.72rem; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
-  .step-item{
-    display:flex; align-items:center; gap:9px; font-size:.78rem; color:#565270;
-    padding:6px 8px; border-radius:8px; transition:color .3s ease, background .3s ease;
-  }
-  .step-item .chk{
-    width:16px; height:16px; border-radius:50%; border:2px solid #3a3650; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:.62rem; transition:all .3s ease;
-  }
+  .steps-panel{ flex:1; background:#0d0d16; border-radius:14px; padding:20px 18px; box-shadow:0 40px 100px rgba(0,0,0,.6); display:flex; flex-direction:column; gap:7px; overflow-y:auto; }
+  .steps-title{ font-family:var(--mono); font-size:.72rem; color:#888; margin-bottom:6px; text-transform:uppercase; }
+  .step-item{ display:flex; align-items:center; gap:9px; font-size:.75rem; color:#565270; padding:5px 8px; border-radius:8px; transition:color .3s ease, background .3s ease; }
+  .step-item .chk{ width:15px; height:15px; border-radius:50%; border:2px solid #3a3650; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.6rem; }
   .step-item.done{ color:#e8e5ff; background:rgba(139,107,255,.08); }
   .step-item.done .chk{ background:linear-gradient(135deg,#8b6bff,#6d8bff); border-color:transparent; }
   .step-item.done .chk::after{ content:'✓'; color:#fff; }
   .step-item.active{ color:#c6bdea; }
   .step-item.active .chk{ border-color:#8b6bff; }
 
-  /* ---------------- CENA 3: site pronto ---------------- */
-  .browser{
-    width:min(760px,92vw); border-radius:14px; overflow:hidden; background:#0d0d16;
-    box-shadow:0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
-  }
+  /* ---- CENA: site pronto ---- */
+  .browser{ width:min(720px,92vw); border-radius:14px; overflow:hidden; background:#0d0d16; box-shadow:0 40px 100px rgba(0,0,0,.6); }
   .browser-bar{ height:36px; background:#15151f; display:flex; align-items:center; gap:8px; padding:0 16px; }
   .browser-url{ margin-left:10px; background:#0d0d16; border-radius:20px; padding:4px 14px; font-size:.7rem; color:#888; font-family:var(--mono); flex:1; max-width:260px; }
   .site-preview{ background:linear-gradient(160deg,#1a0f3d,#4b2fb0); padding:26px 30px 34px; }
@@ -163,41 +108,36 @@
   .sp-hero span{ color:#8b6bff; }
   .sp-hero p{ font-size:.78rem; color:#c6bdea; }
   .sp-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
-  .sp-card{
-    aspect-ratio:1; border-radius:10px; position:relative; overflow:hidden;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
-    font-size:1.5rem; opacity:0; transform:scale(.85); transition:opacity .5s ease, transform .5s ease;
-  }
+  .sp-card{ aspect-ratio:1; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:1.5rem; opacity:0; transform:scale(.85); transition:opacity .5s ease, transform .5s ease; }
   .sp-card.show{ opacity:1; transform:scale(1); }
   .sp-card .lbl{ font-size:.55rem; font-family:var(--sans); color:rgba(255,255,255,.75); }
   .sp-card.c1{ background:linear-gradient(160deg,#c0304a,#7a1630); }
   .sp-card.c2{ background:linear-gradient(160deg,#e9e9ef,#1a1a24); }
   .sp-card.c3{ background:linear-gradient(160deg,#ff9a56,#2596be); }
-  .sp-cta{
-    display:block; margin:0 auto; width:fit-content; padding:10px 26px; border-radius:30px;
-    background:linear-gradient(135deg,#25D366,#1fa855); color:#04241f; font-weight:700; font-size:.78rem;
-    text-decoration:none;
-  }
+  .sp-cta{ display:block; margin:0 auto; width:fit-content; padding:10px 26px; border-radius:30px; background:linear-gradient(135deg,#25D366,#1fa855); color:#04241f; font-weight:700; font-size:.78rem; text-decoration:none; }
 
-  /* ---------------- CENA 4: encerramento ---------------- */
-  #scene4{ text-align:center; }
+  /* ---- CENA: pagamento ---- */
+  .paycard{ background:#0d0d16; border-radius:16px; padding:28px; width:min(340px,88vw); box-shadow:0 40px 100px rgba(0,0,0,.6); text-align:center; }
+  .qr{ width:140px; height:140px; margin:16px auto; border-radius:10px; background:
+    repeating-linear-gradient(0deg,#fff 0 6px,#0d0d16 6px 12px),
+    repeating-linear-gradient(90deg,#fff 0 6px,#0d0d16 6px 12px);
+    background-blend-mode:difference; opacity:.92; }
+  .pay-row{ display:flex; gap:10px; justify-content:center; margin-top:14px; }
+  .pay-opt{ padding:6px 14px; border-radius:20px; font-size:.72rem; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
+  .pay-opt.active{ background:linear-gradient(135deg,#8b6bff,#6d8bff); border-color:transparent; font-weight:700; }
+  .pay-lock{ margin-top:12px; font-size:.7rem; color:#7dd3fc; }
+
+  /* ---- CENA final ---- */
   .end-logo{ font-family:var(--mono); font-size:2.2rem; font-weight:700; margin-bottom:14px; opacity:0; transition:opacity .8s ease; }
   .end-logo.show{ opacity:1; }
   .end-logo b{ color:#8b6bff; }
   .end-tag{ font-size:1.05rem; color:var(--dim); margin-bottom:26px; opacity:0; transition:opacity .8s ease; }
   .end-tag.show{ opacity:1; }
-  .end-cta{
-    display:inline-block; padding:14px 34px; border-radius:40px; font-weight:700;
-    background:linear-gradient(135deg,#FF512F,#DD2476); color:#fff; font-size:1rem;
-    text-decoration:none; cursor:pointer; opacity:0; transition:opacity .8s ease;
-    box-shadow:0 10px 30px rgba(221,36,118,.4);
-  }
+  .end-cta{ display:inline-block; padding:14px 34px; border-radius:40px; font-weight:700; background:linear-gradient(135deg,#FF512F,#DD2476); color:#fff; font-size:1rem; text-decoration:none; cursor:pointer; opacity:0; transition:opacity .8s ease; box-shadow:0 10px 30px rgba(221,36,118,.4); }
   .end-cta.show{ opacity:1; animation:pulseCta 1.8s ease-in-out infinite 1s; }
   @keyframes pulseCta{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.045);} }
 
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
-  }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
 </style>
 </head>
 <body>
@@ -206,50 +146,60 @@
   <div class="glow g1"></div>
   <div class="glow g2"></div>
   <div id="brand">vin<b>í</b>cius<span style="color:#c6bdea">.dev</span></div>
+  <div id="stepCounter"></div>
 
-  <!-- CENA 1 — notificação no WhatsApp -->
-  <div class="scene" id="scene1">
-    <div class="phone">
-      <div class="phone-screen">
-        <div class="wa-clock">21:47</div>
-        <div class="wa-toast">
-          <div class="wa-icon">💬</div>
-          <div class="wa-body">
-            <div class="wa-title"><span>Novo pedido — vinícius.dev</span><span>agora</span></div>
-            <div class="wa-msg" id="waMsg"></div>
-            <span class="wa-speaking" id="waSpeaking"><span class="bar"></span><span class="bar"></span><span class="bar"></span> ouvindo o pedido</span>
-            <span class="wa-badge" id="waBadge">💜 Plano escolhido: Premium</span>
-          </div>
+  <!-- 1 · GANCHO -->
+  <div class="scene" id="s1"><div class="beat">
+    <div class="beat-icon">⏳</div>
+    <div class="beat-caption">Seu produto é bom. Mas seu cliente desiste antes de comprar — porque não existe um lugar <b>profissional</b> pra ele confiar.</div>
+  </div></div>
+
+  <!-- 2 · DESCOBERTA -->
+  <div class="scene" id="s2"><div class="beat">
+    <div class="beat-icon">✨</div>
+    <div class="beat-caption">Foi aí que ela encontrou o <b>vinícius.dev</b> — sites profissionais, feitos sob medida, direto no WhatsApp.</div>
+  </div></div>
+
+  <!-- 3 · BRIEFING -->
+  <div class="scene" id="s3">
+    <div class="phone"><div class="phone-screen">
+      <div class="wa-clock">21:47</div>
+      <div class="wa-toast">
+        <div class="wa-icon">💬</div>
+        <div class="wa-body">
+          <div class="wa-title"><span>Novo pedido — vinícius.dev</span><span>agora</span></div>
+          <div class="wa-msg" id="waMsg"></div>
+          <span class="wa-badge" id="waBadge">💜 Plano escolhido: Premium</span>
         </div>
       </div>
-    </div>
+    </div></div>
   </div>
 
-  <!-- CENA 2 — o código nascendo + as 11 etapas -->
-  <div class="scene" id="scene2">
+  <!-- 4 · INÍCIO DO DESENVOLVIMENTO -->
+  <div class="scene" id="s4"><div class="beat">
+    <div class="beat-icon">🖥️</div>
+    <div class="beat-caption">Na mesma hora, o projeto já começa a ganhar forma.</div>
+  </div></div>
+
+  <!-- 5+6+7 · CÓDIGO, RECURSOS E CARREGAMENTO -->
+  <div class="scene" id="s5">
     <div class="scene2-wrap">
       <div class="editor">
-        <div class="editor-bar">
-          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-          <div class="editor-fname">index.html</div>
-        </div>
+        <div class="editor-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="editor-fname">index.html</div></div>
         <div class="editor-body" id="codeBody"></div>
         <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
       </div>
       <div class="steps-panel">
-        <div class="steps-title">Construindo o site — 11 etapas</div>
+        <div class="steps-title">Construindo o site</div>
         <div id="stepsList"></div>
       </div>
     </div>
   </div>
 
-  <!-- CENA 3 — o site pronto -->
-  <div class="scene" id="scene3">
+  <!-- 8 · GRANDE REVELAÇÃO -->
+  <div class="scene" id="s6">
     <div class="browser">
-      <div class="browser-bar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <div class="browser-url">🔒 seusite.com.br</div>
-      </div>
+      <div class="browser-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="browser-url">🔒 seusite.com.br</div></div>
       <div class="site-preview">
         <div class="sp-item sp-nav"><div class="sp-logo">loja<b>.</b>online</div><div class="sp-nav-links"><span>Início</span><span>Produtos</span><span>Contato</span></div></div>
         <div class="sp-item sp-hero"><h1>Moda que combina com <span>você</span></h1><p>Peças novas toda semana, direto no seu WhatsApp</p></div>
@@ -263,274 +213,277 @@
     </div>
   </div>
 
-  <!-- CENA 4 — encerramento -->
-  <div class="scene" id="scene4">
+  <!-- 9 · REAÇÃO -->
+  <div class="scene" id="s7"><div class="beat">
+    <div class="beat-icon">💜</div>
+    <div class="beat-caption">Exatamente como ela imaginou. <b>Só que melhor.</b></div>
+  </div></div>
+
+  <!-- 10 · TESTE DE VELOCIDADE -->
+  <div class="scene" id="s8"><div class="beat">
+    <div class="beat-icon">⚡</div>
+    <div class="beat-caption">Rápido de verdade. Porque cada segundo de espera é um cliente a menos.</div>
+    <div class="beat-badge" id="speedBadge">0.8s ✓</div>
+  </div></div>
+
+  <!-- 11 · PAGAMENTO -->
+  <div class="scene" id="s9">
+    <div class="paycard">
+      <div style="font-weight:700;">Finalizar pedido</div>
+      <div class="qr"></div>
+      <div class="pay-row"><span class="pay-opt active">Pix</span><span class="pay-opt">Cartão</span></div>
+      <div class="pay-lock">🔒 pagamento seguro</div>
+    </div>
+  </div>
+
+  <!-- 12 · ENTREGA DAS CHAVES -->
+  <div class="scene" id="s10"><div class="beat">
+    <div class="beat-icon">🔑</div>
+    <div class="beat-caption">E o site já é dela. No ar, com o nome dela, do jeito que ela pediu.</div>
+  </div></div>
+
+  <!-- 13 · RESULTADO REAL -->
+  <div class="scene" id="s11"><div class="beat">
+    <div class="beat-icon">🛍️</div>
+    <div class="beat-caption">Menos de 24 horas depois — a <b>primeira venda</b> já tinha chegado.</div>
+  </div></div>
+
+  <!-- 14 · GARANTIA -->
+  <div class="scene" id="s12"><div class="beat">
+    <div class="beat-icon">🛡️</div>
+    <div class="beat-caption">E se precisar de ajuste, é só chamar. Suporte direto comigo — sem central de atendimento, sem robô.</div>
+  </div></div>
+
+  <!-- 15 · CTA FINAL -->
+  <div class="scene" id="s13">
     <div>
       <div class="end-logo" id="endLogo">vin<b>í</b>cius<span style="color:#c6bdea;font-size:.6em;">.dev</span></div>
-      <div class="end-tag" id="endTag">Do pedido no WhatsApp ao site pronto.</div>
+      <div class="end-tag" id="endTag">Seu concorrente já está anunciando. E você?</div>
       <a class="end-cta" id="endCta" href="https://viniciussantoscaissuti-sketch.github.io/site-do-vinicius/" target="_blank" rel="noopener">Faça o seu agora</a>
     </div>
   </div>
 </div>
 
 <script>
-/* ================= ÁUDIO SINTETIZADO (sem arquivos externos) ================= */
-let audioCtx = null;
-let noiseBuffer = null;
+/* ================= ÁUDIO SINTETIZADO ================= */
+let audioCtx=null, noiseBuffer=null;
 function getAudioCtx(){
   if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // gera um pequeno "ruído" reaproveitável para simular o clique de teclado
-    const len = audioCtx.sampleRate * 0.06;
-    noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for(let i=0;i<len;i++){ data[i] = (Math.random()*2-1) * (1 - i/len); }
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const len = audioCtx.sampleRate*0.06;
+    noiseBuffer = audioCtx.createBuffer(1,len,audioCtx.sampleRate);
+    const d = noiseBuffer.getChannelData(0);
+    for(let i=0;i<len;i++){ d[i]=(Math.random()*2-1)*(1-i/len); }
   }
   return audioCtx;
 }
 document.body.addEventListener('click', getAudioCtx, {once:true});
 document.body.addEventListener('touchstart', getAudioCtx, {once:true, passive:true});
+function playKeyClick(){ try{
+  const ctx=getAudioCtx(); const src=ctx.createBufferSource(); src.buffer=noiseBuffer;
+  src.playbackRate.value=0.8+Math.random()*0.6;
+  const filter=ctx.createBiquadFilter(); filter.type='highpass'; filter.frequency.value=1800;
+  const gain=ctx.createGain(); gain.gain.setValueAtTime(0.18,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.045);
+  src.connect(filter).connect(gain).connect(ctx.destination); src.start();
+}catch(e){} }
+function playTick(){ try{
+  const ctx=getAudioCtx(); const osc=ctx.createOscillator(); const gain=ctx.createGain();
+  osc.type='sine'; osc.frequency.value=880;
+  gain.gain.setValueAtTime(0.001,ctx.currentTime); gain.gain.linearRampToValueAtTime(0.09,ctx.currentTime+0.01); gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.18);
+  osc.connect(gain).connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+0.18);
+}catch(e){} }
+function playChime(){ try{
+  const ctx=getAudioCtx();
+  [523.25,659.25,783.99].forEach((f,i)=>{
+    const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.type='sine'; osc.frequency.value=f;
+    const start=ctx.currentTime+i*0.13;
+    gain.gain.setValueAtTime(0.001,start); gain.gain.linearRampToValueAtTime(0.08,start+0.02); gain.gain.exponentialRampToValueAtTime(0.001,start+0.55);
+    osc.connect(gain).connect(ctx.destination); osc.start(start); osc.stop(start+0.55);
+  });
+}catch(e){} }
+function playWhoosh(){ try{
+  const ctx=getAudioCtx(); const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.type='sine';
+  osc.frequency.setValueAtTime(300,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(900,ctx.currentTime+0.35);
+  gain.gain.setValueAtTime(0.001,ctx.currentTime); gain.gain.linearRampToValueAtTime(0.05,ctx.currentTime+0.08); gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
+  osc.connect(gain).connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+0.4);
+}catch(e){} }
+function playCashSound(){ try{
+  const ctx=getAudioCtx();
+  [1046.5,1318.5].forEach((f,i)=>{
+    const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.type='triangle'; osc.frequency.value=f;
+    const start=ctx.currentTime+i*0.09;
+    gain.gain.setValueAtTime(0.001,start); gain.gain.linearRampToValueAtTime(0.07,start+0.01); gain.gain.exponentialRampToValueAtTime(0.001,start+0.3);
+    osc.connect(gain).connect(ctx.destination); osc.start(start); osc.stop(start+0.3);
+  });
+}catch(e){} }
+function playBell(){ try{
+  const ctx=getAudioCtx(); const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.type='sine'; osc.frequency.value=1200;
+  gain.gain.setValueAtTime(0.001,ctx.currentTime); gain.gain.linearRampToValueAtTime(0.09,ctx.currentTime+0.02); gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+  osc.connect(gain).connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+0.5);
+}catch(e){} }
 
-// som de tecla de teclado (ruído filtrado, curto e seco — parece digitação real)
-function playKeyClick(){
-  try{
-    const ctx = getAudioCtx();
-    const src = ctx.createBufferSource();
-    src.buffer = noiseBuffer;
-    src.playbackRate.value = 0.8 + Math.random()*0.6;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.value = 1800;
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.18, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
-    src.connect(filter).connect(gain).connect(ctx.destination);
-    src.start();
-  }catch(e){}
-}
-// som de "check" (etapa concluída)
-function playTick(){
-  try{
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine'; osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.001, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.09, ctx.currentTime+0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.18);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime+0.18);
-  }catch(e){}
-}
-// acorde de sucesso (site pronto)
-function playChime(){
-  try{
-    const ctx = getAudioCtx();
-    [523.25, 659.25, 783.99].forEach((freq, idx)=>{
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine'; osc.frequency.value = freq;
-      const start = ctx.currentTime + idx*0.13;
-      gain.gain.setValueAtTime(0.001, start);
-      gain.gain.linearRampToValueAtTime(0.08, start+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, start+0.55);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(start); osc.stop(start+0.55);
-    });
-  }catch(e){}
-}
-// leve "whoosh" na troca de cena
-function playWhoosh(){
-  try{
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(300, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime+0.35);
-    gain.gain.setValueAtTime(0.001, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime+0.08);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.4);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime+0.4);
-  }catch(e){}
-}
-
-/* ================= VOZ (Web Speech API — a mais natural disponível no navegador) ================= */
-const falaTexto = "Olá! Quero um site para minha loja de roupas, estilo moderno e colorido, com fotos dos produtos e botão de WhatsApp em destaque. Escolhi o plano Premium.";
-let vozEscolhida = null;
+/* ================= VOZ (Web Speech API) ================= */
+let vozEscolhida=null;
 function escolherVoz(){
   const vozes = window.speechSynthesis.getVoices();
   vozEscolhida =
-    vozes.find(v => v.lang === 'pt-BR' && /natural|enhanced|premium|neural/i.test(v.name)) ||
-    vozes.find(v => v.lang === 'pt-BR' && /google|luciana|female|mulher/i.test(v.name)) ||
-    vozes.find(v => v.lang === 'pt-BR') ||
-    vozes.find(v => v.lang && v.lang.startsWith('pt')) || null;
+    vozes.find(v=> v.lang==='pt-BR' && /natural|enhanced|premium|neural/i.test(v.name)) ||
+    vozes.find(v=> v.lang==='pt-BR' && /google|luciana|female|mulher/i.test(v.name)) ||
+    vozes.find(v=> v.lang==='pt-BR') ||
+    vozes.find(v=> v.lang && v.lang.startsWith('pt')) || null;
 }
-if('speechSynthesis' in window){
-  escolherVoz();
-  window.speechSynthesis.onvoiceschanged = escolherVoz;
-}
-
-/* ================= SEQUÊNCIA DO COMERCIAL (espera a fala terminar antes de avançar) ================= */
-function showScene(id){
-  document.querySelectorAll('.scene').forEach(s=> s.classList.remove('show'));
-  document.getElementById(id).classList.add('show');
-  playWhoosh();
-}
-
-// ---- CENA 1 ----
-const msg = `"Quero um site para minha loja de roupas, estilo moderno e colorido, com fotos dos produtos e botão de WhatsApp em destaque."`;
-const waEl = document.getElementById('waMsg');
-const waSpeaking = document.getElementById('waSpeaking');
-const waBadge = document.getElementById('waBadge');
-
-function typeMsg(cb){
-  let i = 0;
-  (function step(){
-    if(i <= msg.length){
-      waEl.innerHTML = msg.slice(0,i) + '<span class="cursor"></span>';
-      i++;
-      setTimeout(step, 34); // mais devagar
-    } else {
-      waEl.innerHTML = msg;
-      cb();
-    }
-  })();
-}
-
-function falarPedido(cb){
-  waSpeaking.classList.add('show');
-  if(!('speechSynthesis' in window)){
-    setTimeout(()=>{ waSpeaking.classList.remove('show'); cb(); }, 3200);
-    return;
-  }
-  const fala = new SpeechSynthesisUtterance(falaTexto);
-  fala.lang = 'pt-BR';
-  fala.rate = 0.95;   // mais devagar = soa mais natural
-  fala.pitch = 1.05;
+if('speechSynthesis' in window){ escolherVoz(); window.speechSynthesis.onvoiceschanged = escolherVoz; }
+function narrar(texto, cb){
+  if(!('speechSynthesis' in window)){ setTimeout(cb, Math.max(2200, texto.length*55)); return; }
+  const fala = new SpeechSynthesisUtterance(texto);
+  fala.lang='pt-BR'; fala.rate=0.98; fala.pitch=1.05;
   if(vozEscolhida) fala.voice = vozEscolhida;
-  fala.onend = ()=>{ waSpeaking.classList.remove('show'); cb(); };
-  fala.onerror = ()=>{ waSpeaking.classList.remove('show'); cb(); };
+  fala.onend = cb; fala.onerror = cb;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(fala);
 }
 
-function iniciarCena1(){
-  showScene('scene1');
+/* ================= MOTOR DE CENAS (14 beats simples + 4 cenas elaboradas) ================= */
+const total = 15;
+const counterEl = document.getElementById('stepCounter');
+function showScene(id, n){
+  document.querySelectorAll('.scene').forEach(s=> s.classList.remove('show'));
+  document.getElementById(id).classList.add('show');
+  counterEl.textContent = 'Etapa ' + n + '/' + total;
+  counterEl.classList.add('show');
+  playWhoosh();
+}
+function runBeat(id, n, texto, sfx, pause, cb){
+  showScene(id, n);
+  const icon = document.querySelector('#'+id+' .beat-icon');
+  const cap = document.querySelector('#'+id+' .beat-caption');
+  const badge = document.querySelector('#'+id+' .beat-badge');
+  setTimeout(()=>{ if(icon) icon.classList.add('show'); if(sfx) sfx(); }, 250);
+  setTimeout(()=>{ if(cap) cap.classList.add('show'); }, 550);
+  setTimeout(()=>{ if(badge) badge.classList.add('show'); }, 1100);
   setTimeout(()=>{
-    typeMsg(()=>{
-      waBadge.classList.add('show');
-      setTimeout(()=>{
-        falarPedido(()=>{
-          setTimeout(iniciarCena2, 1400); // só avança depois que ela termina de falar
-        });
-      }, 500);
-    });
-  }, 1600);
+    narrar(texto, ()=> setTimeout(cb, pause||900));
+  }, 700);
 }
 
-// ---- CENA 2 ----
-const etapas = [
-  'Recebendo o pedido no WhatsApp',
-  'Lendo o que a cliente deseja',
-  'Escolhendo a paleta de cores',
-  'Montando a estrutura do site',
-  'Criando o cabeçalho',
-  'Criando a seção principal',
-  'Adicionando os produtos',
-  'Estilizando os botões',
-  'Ativando o botão de WhatsApp',
-  'Testando no celular e no computador',
-  'Publicando o site',
-];
+// ---- 1 e 2 ----
+function etapa1(){ runBeat('s1',1,"Seu produto é bom. Mas seu cliente desiste antes de comprar, porque não existe um lugar profissional pra ele confiar.", null, 800, etapa2); }
+function etapa2(){ runBeat('s2',2,"Foi aí que ela encontrou o vinícius ponto dev. Sites profissionais, feitos sob medida, direto no WhatsApp.", playBell, 800, etapa3); }
+
+// ---- 3 · briefing (WhatsApp) ----
+const msg = `"Quero um site pra minha loja de roupas, moderno e colorido, com fotos dos produtos e botão de WhatsApp em destaque."`;
+function etapa3(){
+  showScene('s3', 3);
+  const waEl = document.getElementById('waMsg');
+  const waBadge = document.getElementById('waBadge');
+  setTimeout(()=>{
+    let i=0;
+    (function step(){
+      if(i<=msg.length){ waEl.innerHTML = msg.slice(0,i)+'<span class="cursor"></span>'; i++; setTimeout(step,30); }
+      else{
+        waEl.innerHTML = msg;
+        waBadge.classList.add('show');
+        narrar("Ela só precisou contar o que queria. O resto é comigo.", ()=> setTimeout(etapa4, 1000));
+      }
+    })();
+  }, 1500);
+}
+
+// ---- 4 ----
+function etapa4(){ runBeat('s4',4,"Na mesma hora, o projeto já começa a ganhar forma.", playTick, 700, etapa5); }
+
+// ---- 5+6+7 · código + 11 passos + progresso ----
+const etapas11 = ['Recebendo o pedido','Lendo o que a cliente deseja','Escolhendo a paleta de cores','Montando a estrutura do site','Criando o cabeçalho','Criando a seção principal','Adicionando os produtos','Integrando o botão de WhatsApp','Integrando o checkout Pix/cartão','Testando no celular e no computador','Publicando o site'];
 const codeLines = [
   '<span class="cmt">// gerando o site com base no pedido da cliente</span>\n',
   '<span class="tag">&lt;header&gt;</span>\n  <span class="tag">&lt;h1&gt;</span>Loja Online<span class="tag">&lt;/h1&gt;</span>\n<span class="tag">&lt;/header&gt;</span>\n\n',
   '<span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="str">"hero"</span><span class="tag">&gt;</span>\n  <span class="tag">&lt;h2&gt;</span>Moda que combina com você<span class="tag">&lt;/h2&gt;</span>\n<span class="tag">&lt;/section&gt;</span>\n\n',
-  '<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"produtos"</span><span class="tag">&gt;</span>\n  <span class="cmt">// vestido vermelho, look branco &amp; preto, look de praia</span>\n<span class="tag">&lt;/div&gt;</span>\n\n',
-  '<span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"whatsapp-btn"</span><span class="tag">&gt;</span>Falar no WhatsApp<span class="tag">&lt;/a&gt;</span>',
+  '<span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"whatsapp-btn"</span><span class="tag">&gt;</span>Falar no WhatsApp<span class="tag">&lt;/a&gt;</span>\n',
+  '<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"checkout-pix"</span><span class="tag">&gt;</span>\n  <span class="cmt">// pagamento por Pix ou cartão</span>\n<span class="tag">&lt;/div&gt;</span>',
 ];
-const stepsList = document.getElementById('stepsList');
-etapas.forEach((t,idx)=>{
-  const div = document.createElement('div');
-  div.className = 'step-item';
-  div.id = 'step'+idx;
-  div.innerHTML = '<span class="chk"></span><span>'+t+'</span>';
-  stepsList.appendChild(div);
-});
-const codeEl = document.getElementById('codeBody');
-const progressBar = document.getElementById('progressBar');
-
-function marcarEtapa(idx){
-  document.querySelectorAll('.step-item').forEach(el=> el.classList.remove('active'));
-  const el = document.getElementById('step'+idx);
-  if(el){ el.classList.add('active'); }
-  playTick();
-}
-function concluirEtapa(idx){
-  const el = document.getElementById('step'+idx);
-  if(el){ el.classList.remove('active'); el.classList.add('done'); }
-  progressBar.style.width = Math.round(((idx+1)/etapas.length)*100) + '%';
-}
-
-function iniciarCena2(){
-  showScene('scene2');
-  let etapaAtual = 0;
-  let linhaAtual = 0;
-
-  function proximaEtapa(){
-    if(etapaAtual >= etapas.length){
-      setTimeout(iniciarCena3, 1200);
-      return;
-    }
-    marcarEtapa(etapaAtual);
-    // a cada ~2 etapas, digita mais uma linha de código (ritmo mais devagar)
-    if(etapaAtual % 2 === 0 && linhaAtual < codeLines.length){
-      digitarLinha(linhaAtual, ()=>{
-        linhaAtual++;
-        setTimeout(()=>{ concluirEtapa(etapaAtual); etapaAtual++; setTimeout(proximaEtapa, 500); }, 200);
-      });
+function etapa5(){
+  showScene('s5', 5);
+  const stepsList = document.getElementById('stepsList');
+  stepsList.innerHTML='';
+  etapas11.forEach((t,idx)=>{
+    const div=document.createElement('div'); div.className='step-item'; div.id='st'+idx;
+    div.innerHTML='<span class="chk"></span><span>'+t+'</span>';
+    stepsList.appendChild(div);
+  });
+  const codeEl = document.getElementById('codeBody');
+  const progressBar = document.getElementById('progressBar');
+  narrar("Estrutura, botão de WhatsApp, checkout com Pix e cartão — tudo integrado, pronto pra vender.", ()=>{});
+  let etapaAtual=0, linhaAtual=0;
+  function proxima(){
+    if(etapaAtual>=etapas11.length){ setTimeout(etapa6, 1000); return; }
+    document.querySelectorAll('.step-item').forEach(el=>el.classList.remove('active'));
+    const el=document.getElementById('st'+etapaAtual); if(el) el.classList.add('active');
+    playTick();
+    if(etapaAtual%2===0 && linhaAtual<codeLines.length){
+      digitar(linhaAtual, ()=>{ linhaAtual++; concluir(); });
     } else {
-      setTimeout(()=>{ concluirEtapa(etapaAtual); etapaAtual++; setTimeout(proximaEtapa, 750); }, 750);
+      setTimeout(concluir, 500);
+    }
+    function concluir(){
+      setTimeout(()=>{
+        const el2=document.getElementById('st'+etapaAtual); if(el2){ el2.classList.remove('active'); el2.classList.add('done'); }
+        progressBar.style.width = Math.round(((etapaAtual+1)/etapas11.length)*100)+'%';
+        etapaAtual++; setTimeout(proxima, 480);
+      }, 350);
     }
   }
-
-  function digitarLinha(idx, cb){
-    const full = codeLines[idx];
-    const plain = full.replace(/<[^>]*>/g,'');
-    let j = 0;
+  function digitar(idx, cb){
+    const full=codeLines[idx]; let j=0;
     (function step(){
-      codeEl.innerHTML = codeLines.slice(0,idx).map(l=>l).join('') + full.slice(0,j) + '<span id="codeCursor"></span>';
-      playKeyClick();
-      j += 2;
-      if(j <= full.length){ setTimeout(step, 34); }
-      else{ codeEl.innerHTML = codeLines.slice(0,idx+1).join(''); cb(); }
+      codeEl.innerHTML = codeLines.slice(0,idx).join('') + full.slice(0,j) + '<span id="codeCursor"></span>';
+      playKeyClick(); j+=2;
+      if(j<=full.length){ setTimeout(step,30); } else{ codeEl.innerHTML = codeLines.slice(0,idx+1).join(''); cb(); }
     })();
   }
-
-  setTimeout(proximaEtapa, 900);
+  setTimeout(proxima, 900);
 }
 
-// ---- CENA 3 ----
-function iniciarCena3(){
+// ---- 8 · revelação ----
+function etapa6(){
   playChime();
-  showScene('scene3');
-  document.querySelectorAll('#scene3 .sp-item').forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 250 + i*260));
-  document.querySelectorAll('#scene3 .sp-card').forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 900 + i*260));
-  setTimeout(iniciarCena4, 6500);
+  showScene('s6', 8);
+  document.querySelectorAll('#s6 .sp-item').forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 250+i*250));
+  document.querySelectorAll('#s6 .sp-card').forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 900+i*250));
+  narrar("Um site que parece de grande marca, sem o preço de grande marca.", ()=> setTimeout(etapa7, 2200));
 }
 
-// ---- CENA 4 ----
-function iniciarCena4(){
-  showScene('scene4');
+// ---- 9 ----
+function etapa7(){ runBeat('s7',9,"Exatamente como ela imaginou. Só que melhor.", null, 700, etapa8); }
+
+// ---- 10 · velocidade ----
+function etapa8(){ runBeat('s8',10,"Rápido de verdade. Porque cada segundo de espera é um cliente a menos.", playBell, 900, etapa9); }
+
+// ---- 11 · pagamento ----
+function etapa9(){
+  showScene('s9', 11);
+  narrar("Pagamento simples e seguro, no Pix ou no cartão, sem burocracia pra ninguém.", ()=>{ playCashSound(); setTimeout(etapa10, 1200); });
+}
+
+// ---- 12 ----
+function etapa10(){ runBeat('s10',12,"E o site já é dela. No ar, com o nome dela, do jeito que ela pediu.", playWhoosh, 800, etapa11); }
+
+// ---- 13 · resultado ----
+function etapa11(){ runBeat('s11',13,"Menos de vinte e quatro horas depois, a primeira venda já tinha chegado.", playBell, 900, etapa12); }
+
+// ---- 14 · garantia ----
+function etapa12(){ runBeat('s12',14,"E se precisar de ajuste, é só chamar. Suporte direto comigo, sem central de atendimento, sem robô.", null, 900, etapa13); }
+
+// ---- 15 · CTA final ----
+function etapa13(){
+  showScene('s13', 15);
   setTimeout(()=> document.getElementById('endLogo').classList.add('show'), 250);
   setTimeout(()=> document.getElementById('endTag').classList.add('show'), 900);
-  setTimeout(()=> document.getElementById('endCta').classList.add('show'), 1600);
+  narrar("Seu concorrente já está anunciando. E você? Clica no botão agora e fala comigo, antes que ele feche a vaga desse mês.", ()=>{
+    document.getElementById('endCta').classList.add('show');
+  });
 }
 
-// inicia tudo
-window.addEventListener('load', ()=>{ setTimeout(iniciarCena1, 300); });
+window.addEventListener('load', ()=>{ setTimeout(etapa1, 400); });
 </script>
 
 </body>
